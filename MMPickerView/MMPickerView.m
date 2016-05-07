@@ -318,10 +318,12 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
 #pragma mark - UIPickerViewDelegate
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    //从语意上讲onDismissCompletion回调只在Picker View被隐藏的时候才调用。因此在picker view选择变化的时候并不需要触发onDismissCompletion回调
+    
     //  if (self.objectToStringConverter == nil) {
-    if(self.onDismissCompletion){
-        self.onDismissCompletion ([_pickerViewArray objectAtIndex:row]);
-    }
+//    if(self.onDismissCompletion){
+//        self.onDismissCompletion ([_pickerViewArray objectAtIndex:row]);
+//    }
     //  } else{
     //    self.onDismissCompletion (self.objectToStringConverter ([self selectedObject]));
     //  }
