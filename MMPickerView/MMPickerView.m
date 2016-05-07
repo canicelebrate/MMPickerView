@@ -123,7 +123,9 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
                      } completion:^(BOOL completed) {
                          if(completed && hidden){
                              [MMPickerView removePickerView];
-                             callBack([self selectedObject]);
+                             if(callBack){
+                                 callBack([self selectedObject]);
+                             }
                          }
                      }];
     
