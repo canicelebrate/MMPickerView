@@ -319,7 +319,9 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     //  if (self.objectToStringConverter == nil) {
-    self.onDismissCompletion ([_pickerViewArray objectAtIndex:row]);
+    if(self.onDismissCompletion){
+        self.onDismissCompletion ([_pickerViewArray objectAtIndex:row]);
+    }
     //  } else{
     //    self.onDismissCompletion (self.objectToStringConverter ([self selectedObject]));
     //  }
