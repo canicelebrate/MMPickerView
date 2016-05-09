@@ -24,7 +24,7 @@ extern NSString * const MMshowsSelectionIndicator;
 +(void)showPickerViewInView: (UIView *)view
                 withStrings: (NSArray *)strings
                 withOptions: (NSDictionary *)options
-                 completion: (void(^)(NSString *selectedString))completion;
+                 completion: (void(^)(id selectedString))completion;
 
 +(void)showPickerViewInView: (UIView *)view
                 withObjects: (NSArray *)objects
@@ -32,6 +32,6 @@ extern NSString * const MMshowsSelectionIndicator;
     objectToStringConverter: (NSString *(^)(id object))converter
        completion: (void(^)(id selectedObject))completion;
 
-+(void)dismissWithCompletion: (void(^)(NSString *))completion;
++(void)dismissWithCompletion: (void(^)(id))completion;
 
 @end

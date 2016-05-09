@@ -37,7 +37,7 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
 @property (nonatomic, assign) CGFloat yValueFromTop;
 @property (nonatomic, assign) NSInteger pickerViewTextAlignment;
 @property (nonatomic, assign) BOOL pickerViewShowsSelectionIndicator;
-@property (copy) void (^onDismissCompletion)(NSString *);
+@property (copy) void (^onDismissCompletion)(id);
 @property (copy) NSString *(^objectToStringConverter)(id object);
 
 @end
@@ -59,7 +59,7 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
 +(void)showPickerViewInView:(UIView *)view
                 withStrings:(NSArray *)strings
                 withOptions:(NSDictionary *)options
-                 completion:(void (^)(NSString *))completion{
+                 completion:(void (^)(id))completion{
     
     //!!!: 需要清理，界面可能会重用。
     [self sharedView].objectToStringConverter = nil;
@@ -91,11 +91,15 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
 
 #pragma mark - Dismiss Methods
 
-+(void)dismissWithCompletion:(void (^)(NSString *))completion{
++(void)dismissWithCompletion:(void (^)(id))completion{
     [[self sharedView] setPickerHidden:YES callBack:completion];
 }
 
 -(void)dismiss{
+    [MMPickerView dismissWithCompletion:nil];
+}
+
+-(void)dismissWithSelection{
     [MMPickerView dismissWithCompletion:self.onDismissCompletion];
 }
 
@@ -144,12 +148,12 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
     
     if (chosenObject!=nil) {
         selectedRow = [_pickerViewArray indexOfObject:chosenObject];
-        //!!!: 没有选择，就选择第一个。
+        //no  match selection found, set first one as selected one
         if(selectedRow<0 || selectedRow>=array.count){
             selectedRow =0;
         }
     }else{
-        //!!!: 没有选择，就选择第一个。
+        //no selection in option, set first one as selected one
         selectedRow =  0 ;//[[_pickerViewArray objectAtIndex:0] integerValue];
     }
     
@@ -187,6 +191,11 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
     _pickerViewContainerView = [[UIView alloc] initWithFrame:view.bounds];
     [_pickerViewContainerView setBackgroundColor: [UIColor colorWithRed:0.412 green:0.412 blue:0.412 alpha:0.7]];
     [self addSubview:_pickerViewContainerView];
+    
+    UITapGestureRecognizer* tapGest = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onDimmedBGTapped)];
+    tapGest.numberOfTapsRequired = 1;
+    [_pickerViewContainerView addGestureRecognizer:tapGest];
+    
     
     //PickerView Container with top bar
     _pickerContainerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, _pickerViewContainerView.bounds.size.height - 260.0, [UIScreen mainScreen].bounds.size.width, 260.0)];
@@ -268,7 +277,7 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
     
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    _pickerViewBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismiss)];
+    _pickerViewBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissWithSelection)];
     _pickerViewToolBar.items = @[flexibleSpace, _pickerViewBarButtonItem];
     [_pickerViewBarButtonItem setTintColor:buttonTextColor];
     
@@ -329,9 +338,8 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
     //  }
 }
 
-- (id)selectedObject {
-    return [_pickerViewArray objectAtIndex: [self.pickerView selectedRowInComponent:0]];
-}
+
+
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
             viewForRow:(NSInteger)row
@@ -381,6 +389,16 @@ NSString * const MMshowsSelectionIndicator = @"showsSelectionIndicator";
     
     return customPickerView;
     
+}
+
+#pragma mark - Help Methods
+- (id)selectedObject {
+    return [_pickerViewArray objectAtIndex: [self.pickerView selectedRowInComponent:0]];
+}
+
+#pragma mark - UI Events
+-(void)onDimmedBGTapped{
+    [self dismiss];
 }
 
 
